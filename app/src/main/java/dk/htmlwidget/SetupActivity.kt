@@ -37,11 +37,6 @@ class SetupActivity : Activity() {
     private lateinit var showUpdateStatus: CheckBox
     private lateinit var autoSwitchViews: CheckBox
 
-    /*
-     * ----------------------------------------
-     * UDSEENDE
-     * ----------------------------------------
-     */
     private lateinit var roundedCorners: CheckBox
     private lateinit var showBorder: CheckBox
     private lateinit var showBackground: CheckBox
@@ -80,11 +75,6 @@ class SetupActivity : Activity() {
     private val importBackupRequest =
         44
 
-    /*
-     * ----------------------------------------
-     * HENT TEKST I VALGT SPROG
-     * ----------------------------------------
-     */
     private fun text(
         resId: Int,
         vararg formatArgs: Any
@@ -131,9 +121,7 @@ class SetupActivity : Activity() {
         savedInstanceState: Bundle?
     ) {
 
-        super.onCreate(
-            savedInstanceState
-        )
+        super.onCreate(savedInstanceState)
 
         appWidgetId =
             intent?.extras?.getInt(
@@ -141,171 +129,568 @@ class SetupActivity : Activity() {
                 AppWidgetManager.INVALID_APPWIDGET_ID
             ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
 
-        val layout =
-            LinearLayout(this).apply {
+        val density =
+            resources.displayMetrics.density
+
+        fun dp(
+            value: Int
+        ): Int =
+            (
+                value *
+                    density
+                ).roundToInt()
+
+        /*
+         * ========================================
+         * V3 FARVER
+         * ========================================
+         */
+        val backgroundColor =
+            android.graphics.Color.rgb(
+                8,
+                18,
+                30
+            )
+
+        val cardColor =
+            android.graphics.Color.rgb(
+                18,
+                38,
+                56
+            )
+
+        val fieldColor =
+            android.graphics.Color.rgb(
+                24,
+                48,
+                69
+            )
+
+        val accentColor =
+            android.graphics.Color.rgb(
+                22,
+                155,
+                255
+            )
+
+        val primaryText =
+            android.graphics.Color.WHITE
+
+        val secondaryText =
+            android.graphics.Color.rgb(
+                190,
+                205,
+                220
+            )
+
+        val strokeColor =
+            android.graphics.Color.rgb(
+                79,
+                111,
+                139
+            )
+
+        /*
+         * ========================================
+         * V3 HJÆLPEFUNKTIONER
+         * ========================================
+         */
+        fun roundedBackground(
+            color: Int,
+            radiusDp: Int = 18,
+            strokeDp: Int = 0,
+            stroke: Int = strokeColor
+        ): android.graphics.drawable.GradientDrawable {
+
+            return android.graphics.drawable
+                .GradientDrawable()
+                .apply {
+
+                    setColor(
+                        color
+                    )
+
+                    cornerRadius =
+                        dp(
+                            radiusDp
+                        ).toFloat()
+
+                    if (
+                        strokeDp > 0
+                    ) {
+
+                        setStroke(
+                            dp(
+                                strokeDp
+                            ),
+                            stroke
+                        )
+                    }
+                }
+        }
+
+        fun titleView(
+            value: String
+        ): TextView =
+
+            TextView(
+                this
+            ).apply {
+
+                text =
+                    value
+
+                setTextColor(
+                    primaryText
+                )
+
+                textSize =
+                    21f
+
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
+            }
+
+        fun descriptionView(
+            value: String
+        ): TextView =
+
+            TextView(
+                this
+            ).apply {
+
+                text =
+                    value
+
+                setTextColor(
+                    secondaryText
+                )
+
+                textSize =
+                    13f
+
+                setPadding(
+                    0,
+                    dp(4),
+                    0,
+                    0
+                )
+            }
+
+        fun card():
+            LinearLayout =
+
+            LinearLayout(
+                this
+            ).apply {
 
                 orientation =
                     LinearLayout.VERTICAL
 
                 setPadding(
-                    40,
-                    40,
-                    40,
-                    40
+                    dp(18),
+                    dp(16),
+                    dp(18),
+                    dp(16)
+                )
+
+                background =
+                    roundedBackground(
+                        cardColor,
+                        18,
+                        1
+                    )
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+
+                        setMargins(
+                            0,
+                            0,
+                            0,
+                            dp(14)
+                        )
+                    }
+            }
+
+        fun actionButton(
+            label: String,
+            primary: Boolean = false
+        ): Button =
+
+            Button(
+                this
+            ).apply {
+
+                text =
+                    label
+
+                isAllCaps =
+                    false
+
+                textSize =
+                    if (
+                        primary
+                    ) {
+                        18f
+                    } else {
+                        14f
+                    }
+
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
+
+                setTextColor(
+                    android.graphics.Color.WHITE
+                )
+
+                background =
+                    roundedBackground(
+                        if (
+                            primary
+                        ) {
+                            accentColor
+                        } else {
+                            fieldColor
+                        },
+                        if (
+                            primary
+                        ) {
+                            16
+                        } else {
+                            12
+                        },
+                        if (
+                            primary
+                        ) {
+                            0
+                        } else {
+                            1
+                        }
+                    )
+
+                minHeight =
+                    dp(
+                        if (
+                            primary
+                        ) {
+                            58
+                        } else {
+                            48
+                        }
+                    )
+
+                setPadding(
+                    dp(14),
+                    0,
+                    dp(14),
+                    0
                 )
             }
 
-        /*
-         * ----------------------------------------
-         * TITEL
-         * ----------------------------------------
-         */
-        layout.addView(
-            TextView(this).apply {
+        fun styleCheckBox(
+            box: CheckBox
+        ) {
 
-                text =
-                    text(
-                        R.string.app_name
+            box.setTextColor(
+                primaryText
+            )
+
+            box.textSize =
+                15f
+
+            box.setPadding(
+                0,
+                dp(5),
+                0,
+                dp(5)
+            )
+
+            if (
+                android.os.Build.VERSION.SDK_INT >=
+                21
+            ) {
+
+                box.buttonTintList =
+                    android.content.res.ColorStateList(
+                        arrayOf(
+                            intArrayOf(
+                                android.R.attr.state_checked
+                            ),
+                            intArrayOf()
+                        ),
+                        intArrayOf(
+                            accentColor,
+                            secondaryText
+                        )
                     )
-
-                textSize =
-                    26f
             }
-        )
+        }
 
-        /*
-         * ----------------------------------------
-         * SPROG / LANGUAGE
-         * ----------------------------------------
-         */
-        layout.addView(
-            TextView(this).apply {
+        fun sectionHeader(
+            number: String,
+            title: String,
+            icon: String
+        ): TextView =
+
+            TextView(
+                this
+            ).apply {
 
                 text =
-                    text(
-                        R.string.language_title
-                    )
+                    "$icon  $number · $title"
+
+                setTextColor(
+                    primaryText
+                )
 
                 textSize =
-                    18f
+                    20f
+
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
 
                 setPadding(
                     0,
-                    25,
                     0,
-                    5
+                    0,
+                    dp(12)
                 )
             }
-        )
 
-        val languageOptions =
-            arrayOf(
-                text(
-                    R.string.language_danish
-                ),
-                text(
-                    R.string.language_english
+        /*
+         * ========================================
+         * HOVEDINDHOLD
+         * ========================================
+         */
+        val content =
+            LinearLayout(
+                this
+            ).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
+
+                setPadding(
+                    dp(16),
+                    dp(18),
+                    dp(16),
+                    dp(28)
                 )
-            )
 
-        val languageSpinner =
-            Spinner(this).apply {
+                setBackgroundColor(
+                    backgroundColor
+                )
+            }
 
-                adapter =
-                    ArrayAdapter(
-                        this@SetupActivity,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        languageOptions
+        /*
+         * ========================================
+         * TOP
+         * ========================================
+         */
+        val topRow =
+            LinearLayout(
+                this
+            ).apply {
+
+                orientation =
+                    LinearLayout.HORIZONTAL
+
+                gravity =
+                    android.view.Gravity.CENTER_VERTICAL
+
+                setPadding(
+                    dp(4),
+                    0,
+                    dp(4),
+                    dp(18)
+                )
+            }
+
+        val topText =
+            LinearLayout(
+                this
+            ).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
                     )
 
-                val savedLanguage =
-                    prefs.getString(
-                        "appLanguage",
-                        "da"
-                    )
+                addView(
+                    TextView(
+                        this@SetupActivity
+                    ).apply {
 
-                setSelection(
-                    if (
-                        savedLanguage == "en"
-                    ) {
-                        1
-                    } else {
-                        0
+                        text =
+                            text(
+                                R.string.app_name
+                            )
+
+                        setTextColor(
+                            primaryText
+                        )
+
+                        textSize =
+                            30f
+
+                        setTypeface(
+                            typeface,
+                            android.graphics.Typeface.BOLD
+                        )
+                    }
+                )
+
+                addView(
+                    TextView(
+                        this@SetupActivity
+                    ).apply {
+
+                        text =
+                            text(
+                                R.string.setup_description
+                            )
+
+                        setTextColor(
+                            secondaryText
+                        )
+
+                        textSize =
+                            14f
                     }
                 )
             }
 
-        layout.addView(
-            languageSpinner
+        topRow.addView(
+            topText
         )
 
-        languageSpinner.onItemSelectedListener =
-            object :
-                AdapterView.OnItemSelectedListener {
+        val savedLanguage =
+            prefs.getString(
+                "appLanguage",
+                "da"
+            ) ?: "da"
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: android.view.View?,
-                    position: Int,
-                    id: Long
+        /*
+         * Sprogknappen skifter direkte
+         * mellem dansk og engelsk.
+         */
+        val languageButton =
+            actionButton(
+                if (
+                    savedLanguage == "en"
                 ) {
+                    "🇬🇧  EN"
+                } else {
+                    "🇩🇰  DK"
+                }
+            ).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        dp(100),
+                        dp(48)
+                    )
+
+                setOnClickListener {
 
                     val newLanguage =
                         if (
-                            position == 1
+                            prefs.getString(
+                                "appLanguage",
+                                "da"
+                            ) == "en"
                         ) {
-                            "en"
-                        } else {
+
                             "da"
+
+                        } else {
+
+                            "en"
                         }
 
-                    val oldLanguage =
-                        prefs.getString(
+                    prefs.edit()
+                        .putString(
                             "appLanguage",
-                            "da"
+                            newLanguage
                         )
+                        .apply()
 
-                    if (
-                        newLanguage != oldLanguage
-                    ) {
-
-                        prefs.edit()
-                            .putString(
-                                "appLanguage",
-                                newLanguage
-                            )
-                            .apply()
-
-                        recreate()
-                    }
-                }
-
-                override fun onNothingSelected(
-                    parent: AdapterView<*>?
-                ) {
+                    recreate()
                 }
             }
 
-        layout.addView(
-            TextView(this).apply {
+        topRow.addView(
+            languageButton
+        )
 
-                text =
-                    text(
-                        R.string.setup_description
-                    )
-
-                textSize =
-                    16f
-            }
+        content.addView(
+            topRow
         )
 
         /*
-         * ----------------------------------------
-         * WIDGET-NAVN
-         * ----------------------------------------
+         * ========================================
+         * 1 · INDHOLD
+         * ========================================
          */
+        val sourceCard =
+            card()
+
+        sourceCard.addView(
+            sectionHeader(
+                "1",
+                if (
+                    savedLanguage == "en"
+                ) {
+                    "Content"
+                } else {
+                    "Indhold"
+                },
+                "🔗"
+            )
+        )
+
+        sourceCard.addView(
+            TextView(
+                this
+            ).apply {
+
+                text =
+                    if (
+                        savedLanguage == "en"
+                    ) {
+                        "Widget name"
+                    } else {
+                        "Widgetnavn"
+                    }
+
+                setTextColor(
+                    secondaryText
+                )
+
+                textSize =
+                    13f
+            }
+        )
+
         widgetName =
-            EditText(this).apply {
+            EditText(
+                this
+            ).apply {
 
                 hint =
                     text(
@@ -322,19 +707,78 @@ class SetupActivity : Activity() {
                 setSingleLine(
                     true
                 )
+
+                setTextColor(
+                    primaryText
+                )
+
+                setHintTextColor(
+                    secondaryText
+                )
+
+                textSize =
+                    16f
+
+                setPadding(
+                    dp(14),
+                    0,
+                    dp(14),
+                    0
+                )
+
+                background =
+                    roundedBackground(
+                        fieldColor,
+                        12,
+                        1
+                    )
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(52)
+                    ).apply {
+
+                        setMargins(
+                            0,
+                            dp(5),
+                            0,
+                            dp(12)
+                        )
+                    }
             }
 
-        layout.addView(
+        sourceCard.addView(
             widgetName
         )
 
-        /*
-         * ----------------------------------------
-         * WEBSITE
-         * ----------------------------------------
-         */
+        sourceCard.addView(
+            TextView(
+                this
+            ).apply {
+
+                text =
+                    if (
+                        savedLanguage == "en"
+                    ) {
+                        "Website address (URL)"
+                    } else {
+                        "Websiteadresse (URL)"
+                    }
+
+                setTextColor(
+                    secondaryText
+                )
+
+                textSize =
+                    13f
+            }
+        )
+
         url =
-            EditText(this).apply {
+            EditText(
+                this
+            ).apply {
 
                 hint =
                     text(
@@ -351,110 +795,174 @@ class SetupActivity : Activity() {
                 setSingleLine(
                     true
                 )
+
+                setTextColor(
+                    primaryText
+                )
+
+                setHintTextColor(
+                    secondaryText
+                )
+
+                textSize =
+                    16f
+
+                setPadding(
+                    dp(14),
+                    0,
+                    dp(14),
+                    0
+                )
+
+                background =
+                    roundedBackground(
+                        fieldColor,
+                        12,
+                        1
+                    )
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(52)
+                    ).apply {
+
+                        setMargins(
+                            0,
+                            dp(5),
+                            0,
+                            dp(12)
+                        )
+                    }
             }
 
-        layout.addView(
+        sourceCard.addView(
             url
         )
 
         /*
-         * ----------------------------------------
-         * GENBRUG HJEMMESIDE
-         * ----------------------------------------
+         * VÆLG OMRÅDE
          */
-        layout.addView(
-            Button(this).apply {
+        val selectAreaButton =
+            actionButton(
+                text(
+                    R.string.select_area
+                )
+            )
 
-                text =
-                    text(
-                        R.string.reuse_website
+        selectAreaButton
+            .setOnClickListener {
+
+                val website =
+                    url.text
+                        .toString()
+                        .trim()
+
+                if (
+                    website.isEmpty()
+                ) {
+
+                    Toast.makeText(
+                        this,
+                        text(
+                            R.string.enter_website_first
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    return@setOnClickListener
+                }
+
+                prefs.edit()
+                    .putString(
+                        "url_$appWidgetId",
+                        website
                     )
+                    .apply()
+
+                startActivity(
+                    Intent(
+                        this,
+                        CropWebsiteActivity::class.java
+                    ).apply {
+
+                        putExtra(
+                            AppWidgetManager.EXTRA_APPWIDGET_ID,
+                            appWidgetId
+                        )
+
+                        putExtra(
+                            "website",
+                            website
+                        )
+                    }
+                )
+            }
+
+        sourceCard.addView(
+            selectAreaButton
+        )
+
+        /*
+         * GENBRUG + HTML
+         */
+        val sourceButtons =
+            LinearLayout(
+                this
+            ).apply {
+
+                orientation =
+                    LinearLayout.HORIZONTAL
+
+                setPadding(
+                    0,
+                    dp(8),
+                    0,
+                    0
+                )
+            }
+
+        val reuseButton =
+            actionButton(
+                text(
+                    R.string.reuse_website
+                )
+            ).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        0,
+                        dp(48),
+                        1f
+                    ).apply {
+
+                        marginEnd =
+                            dp(4)
+                    }
 
                 setOnClickListener {
 
                     showReusableWebsiteDialog()
                 }
             }
-        )
 
-        /*
-         * ----------------------------------------
-         * VÆLG OMRÅDE
-         * ----------------------------------------
-         */
-        layout.addView(
-            Button(this).apply {
+        val htmlButton =
+            actionButton(
+                text(
+                    R.string.select_html_file
+                )
+            ).apply {
 
-                text =
-                    text(
-                        R.string.select_area
-                    )
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        0,
+                        dp(48),
+                        1f
+                    ).apply {
 
-                setOnClickListener {
-
-                    val website =
-                        url.text
-                            .toString()
-                            .trim()
-
-                    if (
-                        website.isEmpty()
-                    ) {
-
-                        Toast.makeText(
-                            this@SetupActivity,
-                            text(
-                                R.string.enter_website_first
-                            ),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        return@setOnClickListener
+                        marginStart =
+                            dp(4)
                     }
-
-                    prefs.edit()
-                        .putString(
-                            "url_$appWidgetId",
-                            website
-                        )
-                        .apply()
-
-                    val cropIntent =
-                        Intent(
-                            this@SetupActivity,
-                            CropWebsiteActivity::class.java
-                        ).apply {
-
-                            putExtra(
-                                AppWidgetManager.EXTRA_APPWIDGET_ID,
-                                appWidgetId
-                            )
-
-                            putExtra(
-                                "website",
-                                website
-                            )
-                        }
-
-                    startActivity(
-                        cropIntent
-                    )
-                }
-            }
-        )
-
-        /*
-         * ----------------------------------------
-         * LOKAL HTML-FIL
-         * ----------------------------------------
-         */
-        layout.addView(
-            Button(this).apply {
-
-                text =
-                    text(
-                        R.string.select_html_file
-                    )
 
                 setOnClickListener {
 
@@ -482,303 +990,45 @@ class SetupActivity : Activity() {
                     )
                 }
             }
+
+        sourceButtons.addView(
+            reuseButton
         )
 
-        /*
-         * ----------------------------------------
-         * REKLAMEBLOKERING
-         * ----------------------------------------
-         */
-        adBlock =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.block_ads_tracking
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "adblock",
-                        true
-                    )
-            }
-
-        layout.addView(
-            adBlock
+        sourceButtons.addView(
+            htmlButton
         )
 
-        /*
-         * ----------------------------------------
-         * COOKIE-BANNERE
-         * ----------------------------------------
-         */
-        hideCookieBanners =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.hide_cookie_banners
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "hideCookieBanners_$appWidgetId",
-                        prefs.getBoolean(
-                            "hideCookieBanners",
-                            true
-                        )
-                    )
-            }
-
-        layout.addView(
-            hideCookieBanners
+        sourceCard.addView(
+            sourceButtons
         )
 
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.cookie_description
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    10,
-                    0,
-                    10,
-                    20
-                )
-            }
-        )
-
-        /*
-         * ----------------------------------------
-         * OPDATERINGSSTATUS
-         * ----------------------------------------
-         */
-        showUpdateStatus =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.show_update_status
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "showUpdateStatus_$appWidgetId",
-                        true
-                    )
-            }
-
-        layout.addView(
-            showUpdateStatus
-        )
-
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.update_status_description
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    10,
-                    0,
-                    10,
-                    20
-                )
-            }
-        )
-
-        /*
-         * ----------------------------------------
-         * AUTOMATISK SKIFT MELLEM VISNINGER
-         * ----------------------------------------
-         */
-        autoSwitchViews =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.auto_switch_views
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "autoSwitchViews_$appWidgetId",
-                        false
-                    )
-            }
-
-        layout.addView(
-            autoSwitchViews
-        )
-
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.auto_switch_description
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    10,
-                    0,
-                    10,
-                    20
-                )
-            }
+        content.addView(
+            sourceCard
         )
 
         /*
          * ========================================
-         * UDSEENDE
+         * 2 · OPDATERING
          * ========================================
          */
-        layout.addView(
-            TextView(this).apply {
+        val updateCard =
+            card()
 
-                text =
-                    text(
-                        R.string.appearance_title
-                    )
-
-                textSize =
-                    20f
-
-                setPadding(
-                    0,
-                    20,
-                    0,
-                    5
-                )
-            }
+        updateCard.addView(
+            sectionHeader(
+                "2",
+                if (
+                    savedLanguage == "en"
+                ) {
+                    "Updates"
+                } else {
+                    "Opdatering"
+                },
+                "↻"
+            )
         )
 
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.appearance_description
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    0,
-                    0,
-                    0,
-                    5
-                )
-            }
-        )
-
-        /*
-         * AFRUNDEDE HJØRNER
-         */
-        roundedCorners =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.rounded_corners
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "roundedCorners_$appWidgetId",
-                        true
-                    )
-            }
-
-        layout.addView(
-            roundedCorners
-        )
-
-        /*
-         * KANT
-         */
-        showBorder =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.show_border
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "showBorder_$appWidgetId",
-                        false
-                    )
-            }
-
-        layout.addView(
-            showBorder
-        )
-
-        /*
-         * BAGGRUND
-         */
-        showBackground =
-            CheckBox(this).apply {
-
-                text =
-                    text(
-                        R.string.show_background
-                    )
-
-                isChecked =
-                    prefs.getBoolean(
-                        "showBackground_$appWidgetId",
-                        true
-                    )
-            }
-
-        layout.addView(
-            showBackground
-        )
-
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.appearance_widget_only
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    10,
-                    0,
-                    10,
-                    20
-                )
-            }
-        )
-
-        /*
-         * ----------------------------------------
-         * OPDATERINGSINTERVAL
-         * ----------------------------------------
-         */
         val savedRefreshMinutes =
             prefs.getInt(
                 "refreshMinutes_$appWidgetId",
@@ -786,17 +1036,38 @@ class SetupActivity : Activity() {
             )
 
         refreshLabel =
-            TextView(this).apply {
+            TextView(
+                this
+            ).apply {
+
+                setTextColor(
+                    primaryText
+                )
 
                 textSize =
                     16f
+
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
+
+                setPadding(
+                    0,
+                    0,
+                    0,
+                    dp(4)
+                )
             }
 
         refreshSlider =
-            SeekBar(this).apply {
+            SeekBar(
+                this
+            ).apply {
 
                 max =
-                    refreshValues.size - 1
+                    refreshValues.size -
+                        1
 
                 progress =
                     refreshValues
@@ -806,6 +1077,26 @@ class SetupActivity : Activity() {
                         .coerceAtLeast(
                             0
                         )
+
+                if (
+                    android.os.Build.VERSION.SDK_INT >=
+                    21
+                ) {
+
+                    progressTintList =
+                        android.content.res
+                            .ColorStateList
+                            .valueOf(
+                                accentColor
+                            )
+
+                    thumbTintList =
+                        android.content.res
+                            .ColorStateList
+                            .valueOf(
+                                accentColor
+                            )
+                }
             }
 
         refreshSlider
@@ -837,30 +1128,336 @@ class SetupActivity : Activity() {
 
         updateRefreshLabel()
 
-        layout.addView(
+        updateCard.addView(
             refreshLabel
         )
 
-        layout.addView(
+        updateCard.addView(
             refreshSlider
         )
 
-        /*
-         * ----------------------------------------
-         * PREVIEW
-         * ----------------------------------------
-         */
-        layout.addView(
-            Button(this).apply {
+        showUpdateStatus =
+            CheckBox(
+                this
+            ).apply {
 
                 text =
                     text(
-                        R.string.show_preview
+                        R.string.show_update_status
                     )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "showUpdateStatus_$appWidgetId",
+                        true
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        updateCard.addView(
+            showUpdateStatus
+        )
+
+        updateCard.addView(
+            descriptionView(
+                text(
+                    R.string.update_status_description
+                )
+            )
+        )
+
+        content.addView(
+            updateCard
+        )
+
+        /*
+         * ========================================
+         * 3 · SMART VISNING
+         * ========================================
+         */
+        val smartCard =
+            card()
+
+        smartCard.addView(
+            sectionHeader(
+                "3",
+                if (
+                    savedLanguage == "en"
+                ) {
+                    "Smart display"
+                } else {
+                    "Smart visning"
+                },
+                "◈"
+            )
+        )
+
+        adBlock =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.block_ads_tracking
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "adblock",
+                        true
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        smartCard.addView(
+            adBlock
+        )
+
+        hideCookieBanners =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.hide_cookie_banners
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "hideCookieBanners_$appWidgetId",
+                        prefs.getBoolean(
+                            "hideCookieBanners",
+                            true
+                        )
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        smartCard.addView(
+            hideCookieBanners
+        )
+
+        smartCard.addView(
+            descriptionView(
+                text(
+                    R.string.cookie_description
+                )
+            )
+        )
+
+        autoSwitchViews =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.auto_switch_views
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "autoSwitchViews_$appWidgetId",
+                        false
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        smartCard.addView(
+            autoSwitchViews
+        )
+
+        smartCard.addView(
+            descriptionView(
+                text(
+                    R.string.auto_switch_description
+                )
+            )
+        )
+
+        content.addView(
+            smartCard
+        )
+
+        /*
+         * ========================================
+         * 4 · UDSEENDE
+         * ========================================
+         */
+        val appearanceCard =
+            card()
+
+        appearanceCard.addView(
+            sectionHeader(
+                "4",
+                text(
+                    R.string.appearance_title
+                ),
+                "✦"
+            )
+        )
+
+        appearanceCard.addView(
+            descriptionView(
+                text(
+                    R.string.appearance_description
+                )
+            )
+        )
+
+        roundedCorners =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.rounded_corners
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "roundedCorners_$appWidgetId",
+                        true
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        showBorder =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.show_border
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "showBorder_$appWidgetId",
+                        false
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        showBackground =
+            CheckBox(
+                this
+            ).apply {
+
+                text =
+                    text(
+                        R.string.show_background
+                    )
+
+                isChecked =
+                    prefs.getBoolean(
+                        "showBackground_$appWidgetId",
+                        true
+                    )
+
+                styleCheckBox(
+                    this
+                )
+            }
+
+        appearanceCard.addView(
+            roundedCorners
+        )
+
+        appearanceCard.addView(
+            showBorder
+        )
+
+        appearanceCard.addView(
+            showBackground
+        )
+
+        appearanceCard.addView(
+            descriptionView(
+                text(
+                    R.string.appearance_widget_only
+                )
+            )
+        )
+
+        content.addView(
+            appearanceCard
+        )
+
+        /*
+         * ========================================
+         * FORHÅNDSVISNING
+         * ========================================
+         */
+        val previewCard =
+            card()
+
+        previewCard.addView(
+            titleView(
+                if (
+                    savedLanguage == "en"
+                ) {
+                    "◉  Preview"
+                } else {
+                    "◉  Forhåndsvisning"
+                }
+            )
+        )
+
+        previewCard.addView(
+            descriptionView(
+                if (
+                    savedLanguage == "en"
+                ) {
+                    "See the widget before saving your changes."
+                } else {
+                    "Se widgetten, før du gemmer dine ændringer."
+                }
+            )
+        )
+
+        previewCard.addView(
+            actionButton(
+                text(
+                    R.string.show_preview
+                )
+            ).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(50)
+                    ).apply {
+
+                        topMargin =
+                            dp(12)
+                    }
 
                 setOnClickListener {
 
-                    val previewIntent =
+                    startActivity(
                         Intent(
                             this@SetupActivity,
                             WidgetPreviewActivity::class.java
@@ -871,69 +1468,100 @@ class SetupActivity : Activity() {
                                 appWidgetId
                             )
                         }
-
-                    startActivity(
-                        previewIntent
                     )
                 }
             }
         )
 
-        /*
-         * ----------------------------------------
-         * BACKUP
-         * ----------------------------------------
-         */
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.backup_title
-                    )
-
-                textSize =
-                    20f
-
-                setPadding(
-                    0,
-                    30,
-                    0,
-                    5
-                )
-            }
-        )
-
-        layout.addView(
-            TextView(this).apply {
-
-                text =
-                    text(
-                        R.string.backup_description
-                    )
-
-                textSize =
-                    13f
-
-                setPadding(
-                    0,
-                    0,
-                    0,
-                    10
-                )
-            }
+        content.addView(
+            previewCard
         )
 
         /*
-         * EKSPORT
+         * ========================================
+         * AVANCERET
+         * ========================================
          */
-        layout.addView(
-            Button(this).apply {
+        val advancedCard =
+            card()
+
+        val advancedHeader =
+            TextView(
+                this
+            ).apply {
 
                 text =
-                    text(
-                        R.string.export_backup
-                    )
+                    if (
+                        savedLanguage == "en"
+                    ) {
+                        "⚙  Advanced                                      ▾"
+                    } else {
+                        "⚙  Avanceret                                    ▾"
+                    }
+
+                setTextColor(
+                    primaryText
+                )
+
+                textSize =
+                    19f
+
+                setTypeface(
+                    typeface,
+                    android.graphics.Typeface.BOLD
+                )
+
+                setPadding(
+                    0,
+                    dp(2),
+                    0,
+                    dp(2)
+                )
+            }
+
+        val advancedContent =
+            LinearLayout(
+                this
+            ).apply {
+
+                orientation =
+                    LinearLayout.VERTICAL
+
+                visibility =
+                    android.view.View.GONE
+
+                setPadding(
+                    0,
+                    dp(12),
+                    0,
+                    0
+                )
+            }
+
+        advancedContent.addView(
+            descriptionView(
+                text(
+                    R.string.backup_description
+                )
+            )
+        )
+
+        advancedContent.addView(
+            actionButton(
+                text(
+                    R.string.export_backup
+                )
+            ).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(48)
+                    ).apply {
+
+                        topMargin =
+                            dp(10)
+                    }
 
                 setOnClickListener {
 
@@ -942,16 +1570,22 @@ class SetupActivity : Activity() {
             }
         )
 
-        /*
-         * IMPORT
-         */
-        layout.addView(
-            Button(this).apply {
+        advancedContent.addView(
+            actionButton(
+                text(
+                    R.string.import_backup
+                )
+            ).apply {
 
-                text =
-                    text(
-                        R.string.import_backup
-                    )
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(48)
+                    ).apply {
+
+                        topMargin =
+                            dp(8)
+                    }
 
                 setOnClickListener {
 
@@ -960,16 +1594,59 @@ class SetupActivity : Activity() {
             }
         )
 
-        /*
-         * GEM
-         */
-        layout.addView(
-            Button(this).apply {
+        advancedHeader
+            .setOnClickListener {
 
-                text =
+                advancedContent.visibility =
+                    if (
+                        advancedContent.visibility ==
+                        android.view.View.VISIBLE
+                    ) {
+
+                        android.view.View.GONE
+
+                    } else {
+
+                        android.view.View.VISIBLE
+                    }
+            }
+
+        advancedCard.addView(
+            advancedHeader
+        )
+
+        advancedCard.addView(
+            advancedContent
+        )
+
+        content.addView(
+            advancedCard
+        )
+
+        /*
+         * ========================================
+         * GEM WIDGET
+         * ========================================
+         */
+        content.addView(
+            actionButton(
+                "▣  ${
                     text(
                         R.string.save_update_widget
                     )
+                }",
+                primary = true
+            ).apply {
+
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        dp(62)
+                    ).apply {
+
+                        topMargin =
+                            dp(4)
+                    }
 
                 setOnClickListener {
 
@@ -978,16 +1655,20 @@ class SetupActivity : Activity() {
             }
         )
 
-        /*
-         * ----------------------------------------
-         * SCROLLBAR
-         * ----------------------------------------
-         */
         setContentView(
-            ScrollView(this).apply {
+            ScrollView(
+                this
+            ).apply {
+
+                setBackgroundColor(
+                    backgroundColor
+                )
+
+                isFillViewport =
+                    true
 
                 addView(
-                    layout
+                    content
                 )
             }
         )
@@ -1114,11 +1795,6 @@ class SetupActivity : Activity() {
                 autoSwitchViews.isChecked
             )
 
-            /*
-             * ----------------------------------------
-             * UDSEENDE
-             * ----------------------------------------
-             */
             putBoolean(
                 "roundedCorners_$appWidgetId",
                 roundedCorners.isChecked
@@ -1183,7 +1859,8 @@ class SetupActivity : Activity() {
             finish()
         }
     }
-        /*
+
+    /*
      * ----------------------------------------
      * PLANLÆG AUTOMATISK REFRESH
      * ----------------------------------------
@@ -1194,6 +1871,7 @@ class SetupActivity : Activity() {
             appWidgetId ==
             AppWidgetManager.INVALID_APPWIDGET_ID
         ) {
+
             return
         }
 
@@ -1217,7 +1895,9 @@ class SetupActivity : Activity() {
                 .build()
 
         WorkManager
-            .getInstance(this)
+            .getInstance(
+                this
+            )
             .enqueueUniquePeriodicWork(
                 "html-widget-refresh-$appWidgetId",
                 ExistingPeriodicWorkPolicy.UPDATE,
@@ -1271,29 +1951,12 @@ class SetupActivity : Activity() {
             exportBackupRequest
         )
     }
-
-    /*
+        /*
      * ----------------------------------------
      * IMPORTER BACKUP
      * ----------------------------------------
      */
     private fun importBackup() {
-
-        if (
-            appWidgetId ==
-            AppWidgetManager.INVALID_APPWIDGET_ID
-        ) {
-
-            Toast.makeText(
-                this,
-                text(
-                    R.string.widget_not_found
-                ),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            return
-        }
 
         val intent =
             Intent(
@@ -1306,271 +1969,12 @@ class SetupActivity : Activity() {
 
                 type =
                     "application/json"
-
-                addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
             }
 
         startActivityForResult(
             intent,
             importBackupRequest
         )
-    }
-
-    /*
-     * ----------------------------------------
-     * LAV BACKUP-JSON
-     * ----------------------------------------
-     */
-    private fun createBackupJson():
-        JSONObject {
-
-        val backup =
-            JSONObject()
-
-        backup.put(
-            "backupVersion",
-            1
-        )
-
-        backup.put(
-            "app",
-            "Web Widget"
-        )
-
-        backup.put(
-            "adblock",
-            prefs.getBoolean(
-                "adblock",
-                true
-            )
-        )
-
-        val widget =
-            JSONObject()
-
-        fun putString(
-            name: String
-        ) {
-
-            val key =
-                "${name}_$appWidgetId"
-
-            if (
-                prefs.contains(
-                    key
-                )
-            ) {
-
-                widget.put(
-                    name,
-                    prefs.getString(
-                        key,
-                        ""
-                    )
-                )
-            }
-        }
-
-        fun putBoolean(
-            name: String
-        ) {
-
-            val key =
-                "${name}_$appWidgetId"
-
-            if (
-                prefs.contains(
-                    key
-                )
-            ) {
-
-                widget.put(
-                    name,
-                    prefs.getBoolean(
-                        key,
-                        false
-                    )
-                )
-            }
-        }
-
-        fun putInt(
-            name: String
-        ) {
-
-            val key =
-                "${name}_$appWidgetId"
-
-            if (
-                prefs.contains(
-                    key
-                )
-            ) {
-
-                widget.put(
-                    name,
-                    prefs.getInt(
-                        key,
-                        0
-                    )
-                )
-            }
-        }
-
-        fun putFloat(
-            name: String
-        ) {
-
-            val key =
-                "${name}_$appWidgetId"
-
-            if (
-                prefs.contains(
-                    key
-                )
-            ) {
-
-                widget.put(
-                    name,
-                    prefs.getFloat(
-                        key,
-                        0f
-                    ).toDouble()
-                )
-            }
-        }
-
-        putString(
-            "widgetName"
-        )
-
-        putString(
-            "url"
-        )
-
-        putString(
-            "localUri"
-        )
-
-        putBoolean(
-            "hideCookieBanners"
-        )
-
-        putBoolean(
-            "showUpdateStatus"
-        )
-
-        putBoolean(
-            "autoSwitchViews"
-        )
-
-        /*
-         * UDSEENDE
-         */
-        putBoolean(
-            "roundedCorners"
-        )
-
-        putBoolean(
-            "showBorder"
-        )
-
-        putBoolean(
-            "showBackground"
-        )
-
-        putInt(
-            "refreshMinutes"
-        )
-
-        putBoolean(
-            "cropEnabled"
-        )
-
-        putFloat(
-            "cropCssX"
-        )
-
-        putFloat(
-            "cropCssY"
-        )
-
-        putFloat(
-            "cropCssWidth"
-        )
-
-        putFloat(
-            "cropCssHeight"
-        )
-
-        putFloat(
-            "cropCssViewportWidth"
-        )
-
-        putFloat(
-            "cropCssViewportHeight"
-        )
-
-        putFloat(
-            "cropCssDocumentWidth"
-        )
-
-        putFloat(
-            "cropCssDocumentHeight"
-        )
-
-        putInt(
-            "cropViewportWidth"
-        )
-
-        putInt(
-            "cropViewportHeight"
-        )
-
-        putFloat(
-            "cropWebScale"
-        )
-
-        putInt(
-            "cropSelectionWidth"
-        )
-
-        putInt(
-            "cropSelectionHeight"
-        )
-
-        putInt(
-            "websiteScrollX"
-        )
-
-        putInt(
-            "websiteScrollY"
-        )
-
-        putFloat(
-            "cropFrameX"
-        )
-
-        putFloat(
-            "cropFrameY"
-        )
-
-        putInt(
-            "cropFrameWidth"
-        )
-
-        putInt(
-            "cropFrameHeight"
-        )
-
-        backup.put(
-            "widget",
-            widget
-        )
-
-        return backup
     }
 
     /*
@@ -1585,10 +1989,329 @@ class SetupActivity : Activity() {
         try {
 
             val json =
-                createBackupJson()
-                    .toString(
-                        2
+                JSONObject()
+
+            json.put(
+                "version",
+                1
+            )
+
+            json.put(
+                "widgetName",
+                prefs.getString(
+                    "widgetName_$appWidgetId",
+                    ""
+                ) ?: ""
+            )
+
+            json.put(
+                "url",
+                prefs.getString(
+                    "url_$appWidgetId",
+                    ""
+                ) ?: ""
+            )
+
+            json.put(
+                "localUri",
+                prefs.getString(
+                    "localUri_$appWidgetId",
+                    ""
+                ) ?: ""
+            )
+
+            json.put(
+                "adblock",
+                prefs.getBoolean(
+                    "adblock",
+                    true
+                )
+            )
+
+            json.put(
+                "hideCookieBanners",
+                prefs.getBoolean(
+                    "hideCookieBanners_$appWidgetId",
+                    prefs.getBoolean(
+                        "hideCookieBanners",
+                        true
                     )
+                )
+            )
+
+            json.put(
+                "showUpdateStatus",
+                prefs.getBoolean(
+                    "showUpdateStatus_$appWidgetId",
+                    true
+                )
+            )
+
+            json.put(
+                "autoSwitchViews",
+                prefs.getBoolean(
+                    "autoSwitchViews_$appWidgetId",
+                    false
+                )
+            )
+
+            json.put(
+                "roundedCorners",
+                prefs.getBoolean(
+                    "roundedCorners_$appWidgetId",
+                    true
+                )
+            )
+
+            json.put(
+                "showBorder",
+                prefs.getBoolean(
+                    "showBorder_$appWidgetId",
+                    false
+                )
+            )
+
+            json.put(
+                "showBackground",
+                prefs.getBoolean(
+                    "showBackground_$appWidgetId",
+                    true
+                )
+            )
+
+            json.put(
+                "refreshMinutes",
+                prefs.getInt(
+                    "refreshMinutes_$appWidgetId",
+                    15
+                )
+            )
+
+            /*
+             * Crop-data
+             */
+            json.put(
+                "cropEnabled",
+                prefs.getBoolean(
+                    "cropEnabled_$appWidgetId",
+                    false
+                )
+            )
+
+            json.put(
+                "cropX",
+                prefs.getFloat(
+                    "cropX_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            json.put(
+                "cropY",
+                prefs.getFloat(
+                    "cropY_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            json.put(
+                "cropWidth",
+                prefs.getFloat(
+                    "cropWidth_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            json.put(
+                "cropHeight",
+                prefs.getFloat(
+                    "cropHeight_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            json.put(
+                "cropViewportWidth",
+                prefs.getFloat(
+                    "cropViewportWidth_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            json.put(
+                "cropViewportHeight",
+                prefs.getFloat(
+                    "cropViewportHeight_$appWidgetId",
+                    0f
+                ).toDouble()
+            )
+
+            /*
+             * Flere crop-visninger.
+             */
+            val cropViewCount =
+                prefs.getInt(
+                    "cropViewCount_$appWidgetId",
+                    1
+                ).coerceAtLeast(1)
+
+            json.put(
+                "cropViewCount",
+                cropViewCount
+            )
+
+            val cropViews =
+                org.json.JSONArray()
+
+            for (
+                viewIndex in 1..cropViewCount
+            ) {
+
+                val viewJson =
+                    JSONObject()
+
+                val suffix =
+                    if (
+                        viewIndex == 1
+                    ) {
+                        ""
+                    } else {
+                        "_$viewIndex"
+                    }
+
+                viewJson.put(
+                    "index",
+                    viewIndex
+                )
+
+                viewJson.put(
+                    "enabled",
+                    prefs.getBoolean(
+                        "cropEnabled${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getBoolean(
+                                "cropEnabled_$appWidgetId",
+                                false
+                            )
+                        } else {
+                            false
+                        }
+                    )
+                )
+
+                viewJson.put(
+                    "x",
+                    prefs.getFloat(
+                        "cropX${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropX_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                viewJson.put(
+                    "y",
+                    prefs.getFloat(
+                        "cropY${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropY_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                viewJson.put(
+                    "width",
+                    prefs.getFloat(
+                        "cropWidth${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropWidth_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                viewJson.put(
+                    "height",
+                    prefs.getFloat(
+                        "cropHeight${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropHeight_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                viewJson.put(
+                    "viewportWidth",
+                    prefs.getFloat(
+                        "cropViewportWidth${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropViewportWidth_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                viewJson.put(
+                    "viewportHeight",
+                    prefs.getFloat(
+                        "cropViewportHeight${suffix}_$appWidgetId",
+                        if (
+                            viewIndex == 1
+                        ) {
+                            prefs.getFloat(
+                                "cropViewportHeight_$appWidgetId",
+                                0f
+                            )
+                        } else {
+                            0f
+                        }
+                    ).toDouble()
+                )
+
+                cropViews.put(
+                    viewJson
+                )
+            }
+
+            json.put(
+                "cropViews",
+                cropViews
+            )
 
             contentResolver
                 .openOutputStream(
@@ -1598,17 +2321,16 @@ class SetupActivity : Activity() {
                 ?.use {
 
                     it.write(
-                        json
+                        json.toString(
+                            2
+                        )
                     )
                 }
-                ?: throw Exception(
-                    "Could not open file"
-                )
 
             Toast.makeText(
                 this,
                 text(
-                    R.string.backup_saved
+                    R.string.backup_exported
                 ),
                 Toast.LENGTH_LONG
             ).show()
@@ -1618,7 +2340,7 @@ class SetupActivity : Activity() {
             Toast.makeText(
                 this,
                 text(
-                    R.string.backup_save_failed
+                    R.string.backup_export_failed
                 ),
                 Toast.LENGTH_LONG
             ).show()
@@ -1627,7 +2349,7 @@ class SetupActivity : Activity() {
 
     /*
      * ----------------------------------------
-     * LÆS OG IMPORTER BACKUP
+     * LÆS BACKUP
      * ----------------------------------------
      */
     private fun readBackup(
@@ -1646,347 +2368,396 @@ class SetupActivity : Activity() {
 
                         it.readText()
                     }
-                    ?: throw Exception(
-                        "Could not read file"
-                    )
+                    ?: throw IllegalStateException()
 
-            val backup =
+            val json =
                 JSONObject(
                     jsonText
                 )
 
-            val backupVersion =
-                backup.optInt(
-                    "backupVersion",
-                    -1
-                )
-
-            if (
-                backupVersion != 1
-            ) {
-
-                Toast.makeText(
-                    this,
-                    text(
-                        R.string.backup_version_unsupported
-                    ),
-                    Toast.LENGTH_LONG
-                ).show()
-
-                return
-            }
-
-            val widget =
-                backup.optJSONObject(
-                    "widget"
-                )
-                    ?: throw Exception(
-                        "Widget data missing"
-                    )
-
             val editor =
                 prefs.edit()
 
-            /*
-             * GLOBAL REKLAMEBLOKERING
-             */
+            val backupWidgetName =
+                json.optString(
+                    "widgetName",
+                    ""
+                )
+
+            val backupUrl =
+                json.optString(
+                    "url",
+                    ""
+                )
+
+            val backupLocalUri =
+                json.optString(
+                    "localUri",
+                    ""
+                )
+
+            editor.putString(
+                "widgetName_$appWidgetId",
+                backupWidgetName
+            )
+
             if (
-                backup.has(
-                    "adblock"
-                )
+                backupUrl.isNotBlank()
             ) {
 
-                editor.putBoolean(
-                    "adblock",
-                    backup.optBoolean(
-                        "adblock",
-                        true
-                    )
+                editor.putString(
+                    "url_$appWidgetId",
+                    backupUrl
+                )
+
+                editor.remove(
+                    "localUri_$appWidgetId"
+                )
+
+            } else if (
+                backupLocalUri.isNotBlank()
+            ) {
+
+                editor.putString(
+                    "localUri_$appWidgetId",
+                    backupLocalUri
+                )
+
+                editor.remove(
+                    "url_$appWidgetId"
                 )
             }
+
+            editor.putBoolean(
+                "adblock",
+                json.optBoolean(
+                    "adblock",
+                    true
+                )
+            )
+
+            editor.putBoolean(
+                "hideCookieBanners_$appWidgetId",
+                json.optBoolean(
+                    "hideCookieBanners",
+                    true
+                )
+            )
+
+            editor.putBoolean(
+                "hideCookieBanners",
+                json.optBoolean(
+                    "hideCookieBanners",
+                    true
+                )
+            )
+
+            editor.putBoolean(
+                "showUpdateStatus_$appWidgetId",
+                json.optBoolean(
+                    "showUpdateStatus",
+                    true
+                )
+            )
+
+            editor.putBoolean(
+                "autoSwitchViews_$appWidgetId",
+                json.optBoolean(
+                    "autoSwitchViews",
+                    false
+                )
+            )
+
+            editor.putBoolean(
+                "roundedCorners_$appWidgetId",
+                json.optBoolean(
+                    "roundedCorners",
+                    true
+                )
+            )
+
+            editor.putBoolean(
+                "showBorder_$appWidgetId",
+                json.optBoolean(
+                    "showBorder",
+                    false
+                )
+            )
+
+            editor.putBoolean(
+                "showBackground_$appWidgetId",
+                json.optBoolean(
+                    "showBackground",
+                    true
+                )
+            )
+
+            editor.putInt(
+                "refreshMinutes_$appWidgetId",
+                json.optInt(
+                    "refreshMinutes",
+                    15
+                )
+            )
 
             /*
-             * ----------------------------------------
-             * HJÆLPEFUNKTIONER
-             * ----------------------------------------
+             * Legacy crop-data.
              */
-            fun importString(
-                name: String
+            editor.putBoolean(
+                "cropEnabled_$appWidgetId",
+                json.optBoolean(
+                    "cropEnabled",
+                    false
+                )
+            )
+
+            editor.putFloat(
+                "cropX_$appWidgetId",
+                json.optDouble(
+                    "cropX",
+                    0.0
+                ).toFloat()
+            )
+
+            editor.putFloat(
+                "cropY_$appWidgetId",
+                json.optDouble(
+                    "cropY",
+                    0.0
+                ).toFloat()
+            )
+
+            editor.putFloat(
+                "cropWidth_$appWidgetId",
+                json.optDouble(
+                    "cropWidth",
+                    0.0
+                ).toFloat()
+            )
+
+            editor.putFloat(
+                "cropHeight_$appWidgetId",
+                json.optDouble(
+                    "cropHeight",
+                    0.0
+                ).toFloat()
+            )
+
+            editor.putFloat(
+                "cropViewportWidth_$appWidgetId",
+                json.optDouble(
+                    "cropViewportWidth",
+                    0.0
+                ).toFloat()
+            )
+
+            editor.putFloat(
+                "cropViewportHeight_$appWidgetId",
+                json.optDouble(
+                    "cropViewportHeight",
+                    0.0
+                ).toFloat()
+            )
+
+            /*
+             * Flere crop-visninger.
+             */
+            val cropViews =
+                json.optJSONArray(
+                    "cropViews"
+                )
+
+            if (
+                cropViews != null &&
+                cropViews.length() > 0
             ) {
 
-                if (
-                    widget.has(
-                        name
-                    ) &&
-                    !widget.isNull(
-                        name
-                    )
+                val cropViewCount =
+                    json.optInt(
+                        "cropViewCount",
+                        cropViews.length()
+                    ).coerceAtLeast(1)
+
+                editor.putInt(
+                    "cropViewCount_$appWidgetId",
+                    cropViewCount
+                )
+
+                for (
+                    arrayIndex in
+                    0 until cropViews.length()
                 ) {
 
-                    editor.putString(
-                        "${name}_$appWidgetId",
-                        widget.optString(
-                            name,
-                            ""
+                    val viewJson =
+                        cropViews.optJSONObject(
+                            arrayIndex
+                        ) ?: continue
+
+                    val viewIndex =
+                        viewJson.optInt(
+                            "index",
+                            arrayIndex + 1
                         )
-                    )
-                }
-            }
 
-            fun importBoolean(
-                name: String
-            ) {
-
-                if (
-                    widget.has(
-                        name
-                    )
-                ) {
+                    val suffix =
+                        if (
+                            viewIndex == 1
+                        ) {
+                            ""
+                        } else {
+                            "_$viewIndex"
+                        }
 
                     editor.putBoolean(
-                        "${name}_$appWidgetId",
-                        widget.optBoolean(
-                            name,
+                        "cropEnabled${suffix}_$appWidgetId",
+                        viewJson.optBoolean(
+                            "enabled",
                             false
                         )
                     )
-                }
-            }
-
-            fun importInt(
-                name: String
-            ) {
-
-                if (
-                    widget.has(
-                        name
-                    )
-                ) {
-
-                    editor.putInt(
-                        "${name}_$appWidgetId",
-                        widget.optInt(
-                            name,
-                            0
-                        )
-                    )
-                }
-            }
-
-            fun importFloat(
-                name: String
-            ) {
-
-                if (
-                    widget.has(
-                        name
-                    )
-                ) {
 
                     editor.putFloat(
-                        "${name}_$appWidgetId",
-                        widget.optDouble(
-                            name,
+                        "cropX${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "x",
+                            0.0
+                        ).toFloat()
+                    )
+
+                    editor.putFloat(
+                        "cropY${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "y",
+                            0.0
+                        ).toFloat()
+                    )
+
+                    editor.putFloat(
+                        "cropWidth${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "width",
+                            0.0
+                        ).toFloat()
+                    )
+
+                    editor.putFloat(
+                        "cropHeight${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "height",
+                            0.0
+                        ).toFloat()
+                    )
+
+                    editor.putFloat(
+                        "cropViewportWidth${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "viewportWidth",
+                            0.0
+                        ).toFloat()
+                    )
+
+                    editor.putFloat(
+                        "cropViewportHeight${suffix}_$appWidgetId",
+                        viewJson.optDouble(
+                            "viewportHeight",
                             0.0
                         ).toFloat()
                     )
                 }
+
+            } else {
+
+                editor.putInt(
+                    "cropViewCount_$appWidgetId",
+                    1
+                )
             }
-
-            /*
-             * FJERN GAMMEL URL / LOKAL FIL
-             */
-            editor.remove(
-                "url_$appWidgetId"
-            )
-
-            editor.remove(
-                "localUri_$appWidgetId"
-            )
-
-            /*
-             * WIDGET-NAVN
-             */
-            importString(
-                "widgetName"
-            )
-
-            /*
-             * ADRESSE / LOKAL HTML
-             */
-            importString(
-                "url"
-            )
-
-            importString(
-                "localUri"
-            )
-
-            /*
-             * ALMINDELIGE INDSTILLINGER
-             */
-            importBoolean(
-                "hideCookieBanners"
-            )
-
-            importBoolean(
-                "showUpdateStatus"
-            )
-
-            importBoolean(
-                "autoSwitchViews"
-            )
-
-            /*
-             * UDSEENDE
-             */
-            importBoolean(
-                "roundedCorners"
-            )
-
-            importBoolean(
-                "showBorder"
-            )
-
-            importBoolean(
-                "showBackground"
-            )
-
-            importInt(
-                "refreshMinutes"
-            )
-
-            /*
-             * CROP
-             */
-            importBoolean(
-                "cropEnabled"
-            )
-
-            importFloat(
-                "cropCssX"
-            )
-
-            importFloat(
-                "cropCssY"
-            )
-
-            importFloat(
-                "cropCssWidth"
-            )
-
-            importFloat(
-                "cropCssHeight"
-            )
-
-            importFloat(
-                "cropCssViewportWidth"
-            )
-
-            importFloat(
-                "cropCssViewportHeight"
-            )
-
-            importFloat(
-                "cropCssDocumentWidth"
-            )
-
-            importFloat(
-                "cropCssDocumentHeight"
-            )
-
-            importInt(
-                "cropViewportWidth"
-            )
-
-            importInt(
-                "cropViewportHeight"
-            )
-
-            importFloat(
-                "cropWebScale"
-            )
-
-            importInt(
-                "cropSelectionWidth"
-            )
-
-            importInt(
-                "cropSelectionHeight"
-            )
-
-            importInt(
-                "websiteScrollX"
-            )
-
-            importInt(
-                "websiteScrollY"
-            )
-
-            importFloat(
-                "cropFrameX"
-            )
-
-            importFloat(
-                "cropFrameY"
-            )
-
-            importInt(
-                "cropFrameWidth"
-            )
-
-            importInt(
-                "cropFrameHeight"
-            )
-
-            /*
-             * TVING NY RENDERING EFTER IMPORT
-             */
-            editor.remove(
-                "lastBitmapChecksum_$appWidgetId"
-            )
-
-            editor.remove(
-                "lastSuccessfulUpdate_$appWidgetId"
-            )
 
             editor.apply()
 
             /*
-             * GLOBAL COOKIE-KOMPATIBILITET
+             * Opdater felterne på skærmen.
              */
-            val importedCookieSetting =
-                prefs.getBoolean(
-                    "hideCookieBanners_$appWidgetId",
+            widgetName.setText(
+                backupWidgetName
+            )
+
+            url.setText(
+                backupUrl
+            )
+
+            localUri =
+                if (
+                    backupLocalUri.isNotBlank()
+                ) {
+
+                    Uri.parse(
+                        backupLocalUri
+                    )
+
+                } else {
+
+                    null
+                }
+
+            adBlock.isChecked =
+                json.optBoolean(
+                    "adblock",
                     true
                 )
 
-            prefs.edit()
-                .putBoolean(
+            hideCookieBanners.isChecked =
+                json.optBoolean(
                     "hideCookieBanners",
-                    importedCookieSetting
+                    true
                 )
-                .apply()
 
-            /*
-             * OPDATER SKÆRM
-             */
-            updateUiAfterImport()
-
-            /*
-             * START IMPORTERET INTERVAL
-             */
-            scheduleRefresh()
-
-            /*
-             * RENDER WIDGET
-             */
-            HtmlWidgetProvider.refresh(
-                this,
-                intArrayOf(
-                    appWidgetId
+            showUpdateStatus.isChecked =
+                json.optBoolean(
+                    "showUpdateStatus",
+                    true
                 )
-            )
+
+            autoSwitchViews.isChecked =
+                json.optBoolean(
+                    "autoSwitchViews",
+                    false
+                )
+
+            roundedCorners.isChecked =
+                json.optBoolean(
+                    "roundedCorners",
+                    true
+                )
+
+            showBorder.isChecked =
+                json.optBoolean(
+                    "showBorder",
+                    false
+                )
+
+            showBackground.isChecked =
+                json.optBoolean(
+                    "showBackground",
+                    true
+                )
+
+            val importedRefreshMinutes =
+                json.optInt(
+                    "refreshMinutes",
+                    15
+                )
+
+            refreshSlider.progress =
+                refreshValues
+                    .indexOf(
+                        importedRefreshMinutes
+                    )
+                    .coerceAtLeast(
+                        0
+                    )
+
+            updateRefreshLabel()
 
             Toast.makeText(
                 this,
@@ -2007,65 +2778,375 @@ class SetupActivity : Activity() {
             ).show()
         }
     }
-        /*
+
+    /*
      * ----------------------------------------
-     * OPDATER SKÆRM EFTER IMPORT
+     * GENBRUG WEBSITE
      * ----------------------------------------
      */
-    private fun updateUiAfterImport() {
+    private fun showReusableWebsiteDialog() {
 
-        val importedWidgetName =
-            prefs.getString(
-                "widgetName_$appWidgetId",
-                ""
-            ) ?: ""
+        val allPrefs =
+            prefs.all
 
-        widgetName.setText(
-            importedWidgetName
-        )
+        val reusableIds =
+            allPrefs.keys
+                .filter {
 
-        val importedUrl =
-            prefs.getString(
-                "url_$appWidgetId",
-                ""
-            ) ?: ""
-
-        url.setText(
-            importedUrl
-        )
-
-        val importedLocalUri =
-            prefs.getString(
-                "localUri_$appWidgetId",
-                null
-            )
-
-        localUri =
-            if (
-                importedLocalUri.isNullOrBlank()
-            ) {
-
-                null
-
-            } else {
-
-                try {
-
-                    Uri.parse(
-                        importedLocalUri
+                    it.startsWith(
+                        "url_"
                     )
 
-                } catch (_: Exception) {
-
-                    null
                 }
-            }
+                .mapNotNull {
 
-        adBlock.isChecked =
+                    it.removePrefix(
+                        "url_"
+                    )
+                        .toIntOrNull()
+                }
+                .filter {
+
+                    it !=
+                        appWidgetId
+                }
+                .distinct()
+                .sorted()
+
+        if (
+            reusableIds.isEmpty()
+        ) {
+
+            Toast.makeText(
+                this,
+                text(
+                    R.string.no_reusable_websites
+                ),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+        val labels =
+            reusableIds
+                .map { id ->
+
+                    val name =
+                        prefs.getString(
+                            "widgetName_$id",
+                            ""
+                        )
+                            ?.trim()
+                            .orEmpty()
+
+                    val website =
+                        prefs.getString(
+                            "url_$id",
+                            ""
+                        )
+                            ?.trim()
+                            .orEmpty()
+
+                    if (
+                        name.isNotBlank()
+                    ) {
+
+                        "$name\n$website"
+
+                    } else {
+
+                        website
+                    }
+                }
+                .toTypedArray()
+
+        AlertDialog.Builder(
+            this
+        )
+            .setTitle(
+                text(
+                    R.string.reuse_website
+                )
+            )
+            .setItems(
+                labels
+            ) { _, which ->
+
+                val sourceId =
+                    reusableIds[
+                        which
+                    ]
+
+                reuseWebsiteSettings(
+                    sourceId
+                )
+            }
+            .setNegativeButton(
+                android.R.string.cancel,
+                null
+            )
+            .show()
+    }
+
+    /*
+     * ----------------------------------------
+     * KOPIER WEBSITE-INDSTILLINGER
+     * ----------------------------------------
+     */
+    private fun reuseWebsiteSettings(
+        sourceId: Int
+    ) {
+
+        val sourceUrl =
+            prefs.getString(
+                "url_$sourceId",
+                ""
+            )
+                ?.trim()
+                .orEmpty()
+
+        if (
+            sourceUrl.isBlank()
+        ) {
+
+            Toast.makeText(
+                this,
+                text(
+                    R.string.no_reusable_websites
+                ),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
+        val editor =
+            prefs.edit()
+
+        editor.putString(
+            "url_$appWidgetId",
+            sourceUrl
+        )
+
+        editor.remove(
+            "localUri_$appWidgetId"
+        )
+
+        editor.putBoolean(
+            "hideCookieBanners_$appWidgetId",
             prefs.getBoolean(
-                "adblock",
+                "hideCookieBanners_$sourceId",
+                prefs.getBoolean(
+                    "hideCookieBanners",
+                    true
+                )
+            )
+        )
+
+        editor.putBoolean(
+            "showUpdateStatus_$appWidgetId",
+            prefs.getBoolean(
+                "showUpdateStatus_$sourceId",
                 true
             )
+        )
+
+        editor.putBoolean(
+            "autoSwitchViews_$appWidgetId",
+            prefs.getBoolean(
+                "autoSwitchViews_$sourceId",
+                false
+            )
+        )
+
+        editor.putBoolean(
+            "roundedCorners_$appWidgetId",
+            prefs.getBoolean(
+                "roundedCorners_$sourceId",
+                true
+            )
+        )
+
+        editor.putBoolean(
+            "showBorder_$appWidgetId",
+            prefs.getBoolean(
+                "showBorder_$sourceId",
+                false
+            )
+        )
+
+        editor.putBoolean(
+            "showBackground_$appWidgetId",
+            prefs.getBoolean(
+                "showBackground_$sourceId",
+                true
+            )
+        )
+
+        editor.putInt(
+            "refreshMinutes_$appWidgetId",
+            prefs.getInt(
+                "refreshMinutes_$sourceId",
+                15
+            )
+        )
+
+        /*
+         * Kopier crop-visninger.
+         */
+        val cropViewCount =
+            prefs.getInt(
+                "cropViewCount_$sourceId",
+                1
+            ).coerceAtLeast(1)
+
+        editor.putInt(
+            "cropViewCount_$appWidgetId",
+            cropViewCount
+        )
+
+        for (
+            viewIndex in 1..cropViewCount
+        ) {
+
+            val suffix =
+                if (
+                    viewIndex == 1
+                ) {
+                    ""
+                } else {
+                    "_$viewIndex"
+                }
+
+            editor.putBoolean(
+                "cropEnabled${suffix}_$appWidgetId",
+                prefs.getBoolean(
+                    "cropEnabled${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getBoolean(
+                            "cropEnabled_$sourceId",
+                            false
+                        )
+                    } else {
+                        false
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropX${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropX${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropX_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropY${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropY${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropY_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropWidth${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropWidth${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropWidth_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropHeight${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropHeight${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropHeight_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropViewportWidth${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropViewportWidth${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropViewportWidth_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+
+            editor.putFloat(
+                "cropViewportHeight${suffix}_$appWidgetId",
+                prefs.getFloat(
+                    "cropViewportHeight${suffix}_$sourceId",
+                    if (
+                        viewIndex == 1
+                    ) {
+                        prefs.getFloat(
+                            "cropViewportHeight_$sourceId",
+                            0f
+                        )
+                    } else {
+                        0f
+                    }
+                )
+            )
+        }
+
+        editor.apply()
+
+        url.setText(
+            sourceUrl
+        )
+
+        localUri =
+            null
 
         hideCookieBanners.isChecked =
             prefs.getBoolean(
@@ -2085,11 +3166,6 @@ class SetupActivity : Activity() {
                 false
             )
 
-        /*
-         * ----------------------------------------
-         * UDSEENDE EFTER IMPORT
-         * ----------------------------------------
-         */
         roundedCorners.isChecked =
             prefs.getBoolean(
                 "roundedCorners_$appWidgetId",
@@ -2108,210 +3184,40 @@ class SetupActivity : Activity() {
                 true
             )
 
-        val importedRefresh =
+        val reusedRefreshMinutes =
             prefs.getInt(
                 "refreshMinutes_$appWidgetId",
                 15
             )
 
-        val importedIndex =
+        refreshSlider.progress =
             refreshValues
                 .indexOf(
-                    importedRefresh
+                    reusedRefreshMinutes
                 )
-
-        refreshSlider.progress =
-            if (
-                importedIndex >= 0
-            ) {
-
-                importedIndex
-
-            } else {
-
-                0
-            }
+                .coerceAtLeast(
+                    0
+                )
 
         updateRefreshLabel()
+
+        Toast.makeText(
+            this,
+            text(
+                R.string.website_reused
+            ),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     /*
      * ----------------------------------------
-     * GENBRUG HJEMMESIDE FRA ANDEN WIDGET
+     * RESULTATER FRA FILVÆLGER
      * ----------------------------------------
      */
-    private fun showReusableWebsiteDialog() {
-
-        val widgets =
-            findReusableWebsiteWidgets()
-
-        if (
-            widgets.isEmpty()
-        ) {
-
-            Toast.makeText(
-                this,
-                text(
-                    R.string.no_reusable_widgets
-                ),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            return
-        }
-
-        val names =
-            widgets
-                .map {
-                    it.second
-                }
-                .toTypedArray()
-
-        AlertDialog.Builder(
-            this
-        )
-            .setTitle(
-                text(
-                    R.string.choose_widget
-                )
-            )
-            .setItems(
-                names
-            ) { _, position ->
-
-                val sourceWidgetId =
-                    widgets[
-                        position
-                    ].first
-
-                val sourceUrl =
-                    prefs.getString(
-                        "url_$sourceWidgetId",
-                        ""
-                    )
-                        ?.trim()
-                        .orEmpty()
-
-                if (
-                    sourceUrl.isNotEmpty()
-                ) {
-
-                    url.setText(
-                        sourceUrl
-                    )
-
-                    localUri =
-                        null
-
-                    Toast.makeText(
-                        this,
-                        text(
-                            R.string.website_copied
-                        ),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-            .setNegativeButton(
-                text(
-                    R.string.cancel
-                ),
-                null
-            )
-            .show()
-    }
-
-    /*
-     * ----------------------------------------
-     * FIND ANDRE WEBSITE-WIDGETS
-     * ----------------------------------------
-     */
-    private fun findReusableWebsiteWidgets():
-        List<Pair<Int, String>> {
-
-        val result =
-            mutableListOf<
-                Pair<Int, String>
-            >()
-
-        prefs.all.keys
-            .filter {
-
-                it.startsWith(
-                    "url_"
-                )
-            }
-            .forEach { key ->
-
-                val id =
-                    key.removePrefix(
-                        "url_"
-                    )
-                        .toIntOrNull()
-                        ?: return@forEach
-
-                if (
-                    id ==
-                    appWidgetId
-                ) {
-
-                    return@forEach
-                }
-
-                val website =
-                    prefs.getString(
-                        "url_$id",
-                        ""
-                    )
-                        ?.trim()
-                        .orEmpty()
-
-                if (
-                    website.isEmpty()
-                ) {
-
-                    return@forEach
-                }
-
-                val name =
-                    prefs.getString(
-                        "widgetName_$id",
-                        ""
-                    )
-                        ?.trim()
-                        .orEmpty()
-
-                val displayName =
-                    if (
-                        name.isNotEmpty()
-                    ) {
-
-                        name
-
-                    } else {
-
-                        website
-                    }
-
-                result.add(
-                    id to
-                        displayName
-                )
-            }
-
-        return result
-            .sortedBy {
-
-                it.second
-                    .lowercase()
-            }
-    }
-
-    /*
-     * ----------------------------------------
-     * RESULTATER
-     * ----------------------------------------
-     */
+    @Deprecated(
+        "Deprecated in Java"
+    )
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -2324,23 +3230,29 @@ class SetupActivity : Activity() {
             data
         )
 
-        /*
-         * HTML-FIL VALGT
-         */
         if (
-            requestCode ==
-            chooseHtmlRequest &&
-            resultCode ==
+            resultCode !=
             RESULT_OK
         ) {
 
-            data?.data?.let { uri ->
+            return
+        }
+
+        val selectedUri =
+            data?.data
+                ?: return
+
+        when (
+            requestCode
+        ) {
+
+            chooseHtmlRequest -> {
 
                 try {
 
                     contentResolver
                         .takePersistableUriPermission(
-                            uri,
+                            selectedUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                         )
 
@@ -2348,8 +3260,12 @@ class SetupActivity : Activity() {
                 }
 
                 localUri =
-                    uri
+                    selectedUri
 
+                /*
+                 * Lokal HTML og website-URL
+                 * er alternative kilder.
+                 */
                 url.setText(
                     ""
                 )
@@ -2363,43 +3279,17 @@ class SetupActivity : Activity() {
                 ).show()
             }
 
-            return
-        }
-
-        /*
-         * EKSPORT
-         */
-        if (
-            requestCode ==
-            exportBackupRequest &&
-            resultCode ==
-            RESULT_OK
-        ) {
-
-            data?.data?.let { uri ->
+            exportBackupRequest -> {
 
                 writeBackup(
-                    uri
+                    selectedUri
                 )
             }
 
-            return
-        }
-
-        /*
-         * IMPORT
-         */
-        if (
-            requestCode ==
-            importBackupRequest &&
-            resultCode ==
-            RESULT_OK
-        ) {
-
-            data?.data?.let { uri ->
+            importBackupRequest -> {
 
                 readBackup(
-                    uri
+                    selectedUri
                 )
             }
         }
