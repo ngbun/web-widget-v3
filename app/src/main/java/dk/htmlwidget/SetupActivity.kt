@@ -998,7 +998,7 @@ class SetupActivity : Activity() {
 
         sourceButtons.addView(
             htmlButton
-        )
+        )        )
 
         sourceCard.addView(
             sourceButtons
@@ -1656,7 +1656,16 @@ class SetupActivity : Activity() {
             }
         )
 
-        setContentView(
+        /*
+         * ========================================
+         * STATUSLINJE / SYSTEM BARS
+         * ========================================
+         *
+         * V3 kører edge-to-edge på nyere Android.
+         * Derfor bruger vi telefonens rigtige insets
+         * i stedet for en fast topafstand.
+         */
+        val scrollView =
             ScrollView(
                 this
             ).apply {
@@ -1668,11 +1677,44 @@ class SetupActivity : Activity() {
                 isFillViewport =
                     true
 
+                clipToPadding =
+                    false
+
                 addView(
                     content
                 )
             }
+
+        androidx.core.view.ViewCompat
+            .setOnApplyWindowInsetsListener(
+                scrollView
+            ) { view, insets ->
+
+                val systemBars =
+                    insets.getInsets(
+                        androidx.core.view.WindowInsetsCompat
+                            .Type
+                            .systemBars()
+                    )
+
+                view.setPadding(
+                    0,
+                    systemBars.top,
+                    0,
+                    systemBars.bottom
+                )
+
+                insets
+            }
+
+        setContentView(
+            scrollView
         )
+
+        androidx.core.view.ViewCompat
+            .requestApplyInsets(
+                scrollView
+            )
     }
 
     /*
@@ -1952,7 +1994,8 @@ class SetupActivity : Activity() {
             exportBackupRequest
         )
     }
-        /*
+
+    /*
      * ----------------------------------------
      * IMPORTER BACKUP
      * ----------------------------------------
@@ -2346,9 +2389,7 @@ class SetupActivity : Activity() {
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    /*
+    }    /*
      * ----------------------------------------
      * LÆS BACKUP
      * ----------------------------------------
