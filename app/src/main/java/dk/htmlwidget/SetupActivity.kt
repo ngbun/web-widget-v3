@@ -998,7 +998,7 @@ class SetupActivity : Activity() {
 
         sourceButtons.addView(
             htmlButton
-        )        )
+        )        
 
         sourceCard.addView(
             sourceButtons
