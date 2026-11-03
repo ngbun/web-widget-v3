@@ -93,5 +93,11 @@
     <string name="status_updating">Updating…</string>
     <string name="status_updated">Updated %1$s</string>
     <string name="status_update_failed">Could not update</string>
+
+    <!-- V3 -->
+    <string name="backup_exported">Backup exported</string>
+    <string name="backup_export_failed">Could not export backup</string>
+    <string name="no_reusable_websites">There are no other website widgets to reuse</string>
+    <string name="website_reused">Website reused</string>
     
 </resources>
