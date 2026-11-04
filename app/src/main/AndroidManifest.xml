@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+    android:name=".WebWidgetApplication"
+    android:theme="@android:style/Theme.Material.Light.NoActionBar"
+    android:label="HTML Widget"
+    android:icon="@drawable/web_widget_icon"
+    android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".SetupActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".WebsiteRenderActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+
+        <activity
+            android:name=".CropWebsiteActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+
+        <!-- Preview af widget -->
+        <activity
+            android:name=".WidgetPreviewActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+
+        <service
+            android:name=".HtmlRenderService"
+            android:exported="false" />
+
+        <!-- 3×2 - eksisterende widget -->
+        <receiver
+            android:name=".HtmlWidgetProvider"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="dk.htmlwidget.REFRESH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/html_widget_info" />
+        </receiver>
+
+        <!-- 1×1 -->
+        <receiver
+            android:name=".HtmlWidgetProvider1x1"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="dk.htmlwidget.REFRESH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/html_widget_info_1x1" />
+        </receiver>
+
+        <!-- 2×2 -->
+        <receiver
+            android:name=".HtmlWidgetProvider2x2"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="dk.htmlwidget.REFRESH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/html_widget_info_2x2" />
+        </receiver>
+
+        <!-- Best-effort wake refresh after device unlock. -->
+        <receiver
+            android:name=".WidgetWakeReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
